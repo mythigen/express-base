@@ -1,0 +1,99 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Express API with Swagger",
+    "version": "1.0.0",
+    "description": "An API application made with Express and documented with Swagger"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/v1/products": {
+      "get": {
+        "summary": "Get all products",
+        "tags": [
+          "Products"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a product",
+        "tags": [
+          "Products"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created product"
+          }
+        }
+      }
+    },
+    "/v1/products/update": {
+      "patch": {
+        "summary": "Updated a product",
+        "tags": [
+          "Products"
+        ],
+        "responses": {
+          "202": {
+            "description": "Updated product"
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a user",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created user"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "202": {
+            "description": "Deleted user"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": [
+    {
+      "name": "Products",
+      "description": "Product management"
+    },
+    {
+      "name": "Users",
+      "description": "User management"
+    }
+  ]
+}
