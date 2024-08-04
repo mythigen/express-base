@@ -2,6 +2,96 @@
 
 This project is a backend web application built with Express.js, using Bun for scripting and testing. Below is a detailed guide on the project structure, its dependencies, and how to work with it.
 
+## Installation
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (version X.X.X)
+- [Bun](https://bun.sh/)
+- [Docker](https://www.docker.com/)
+
+### Steps
+1. Clone the repository:
+```sh
+git clone https://github.com/yourusername/yourproject.git
+cd yourproject
+```
+
+2. Install dependencies:
+```sh
+bun install
+```
+
+## Usage
+
+### Scripts
+This project uses several npm scripts for common tasks:
+
+- **`start`**: Runs the application.
+```sh
+bun src/server.ts
+```
+
+- **`dev`**: Runs the application in watch mode. The server restarts automatically when files change.
+```sh
+bun --watch src/server.ts
+```
+
+- **`docker`**: Builds the Docker image, stops any running containers, and starts the new container.
+```sh
+sudo docker-compose build && docker-compose down && docker-compose up
+```
+
+- **`build`**: Builds the project for production.
+```sh
+bun scripts/build/index.js
+```
+
+- **`preview`**: Previews the built project.
+```sh
+bun target/server.js
+```
+
+- **`preview:prod`**: Previews the built project in production mode.
+```sh
+NODE_ENV=production bun target/server.js
+```
+
+- **`test`**: Runs the test suite.
+```sh
+jest
+```
+
+- **`make:swagger`**: Generates the Swagger JSON documentation.
+```sh
+bun scripts/generate-swagger-json.js
+```
+
+### Running the Project
+To start the project in development mode:
+```sh
+bun dev
+```
+
+To build the project:
+```sh
+bun build
+```
+
+To preview the built project:
+```sh
+bun preview
+```
+
+To run the project in production mode:
+```sh
+bun preview:prod
+```
+
+To generate the Swagger documentation:
+```sh
+bun make:swagger
+```
+
 ## Project Structure
 
 ```plaintext
