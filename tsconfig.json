@@ -40,7 +40,8 @@
       "@types/*": ["./src/types/*"],
       "@utils/*": ["./src/utils/*"],
       "@routes": ["./src/routes"],
-      "$server": ["./src/server.ts"]
+      "$server": ["./src/server.ts"],
+      "$build/*": ["./scripts/build/*"]
     }
   }
 }

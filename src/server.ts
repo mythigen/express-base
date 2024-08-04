@@ -9,7 +9,7 @@ import { isPortInUse } from "@utils/isPortInUse";
 import cors_options from "@middlewares/cors";
 import logger from "@middlewares/logger";
 import router from "@routes";
-
+// Dynamic Imports (on build)
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import { swaggerSpec } from "@middlewares/swagger";

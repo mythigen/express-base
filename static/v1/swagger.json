@@ -3,7 +3,7 @@
   "info": {
     "title": "Express API with Swagger",
     "version": "1.0.0",
-    "description": "An API application made with Express and documented with Swagger"
+    "description": "A simple CRUD API application made with Express and documented with Swagger"
   },
   "servers": [
     {
@@ -34,11 +34,9 @@
             "description": "Created product"
           }
         }
-      }
-    },
-    "/v1/products/update": {
+      },
       "patch": {
-        "summary": "Updated a product",
+        "summary": "Update a product",
         "tags": [
           "Products"
         ],

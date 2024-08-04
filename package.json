@@ -5,10 +5,10 @@
     "start": "bun src/server.ts",
     "dev": "bun --watch src/server.ts",
     "docker": "sudo docker-compose build && docker-compose down && docker-compose up",
-    "build": "bun scripts/build.ts",
+    "build": "bun scripts/build/index.js",
     "preview": "bun target/server.js",
     "preview:prod": "NODE_ENV=production bun target/server.js",
-    "make:swagger": "bun scripts/generate-swagger-json.ts"
+    "make:swagger": "bun scripts/generate-swagger-json.js"
   },
   "type": "module",
   "devDependencies": {
