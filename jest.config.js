@@ -1,3 +1,10 @@
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
+
+const argv = yargs(hideBin(process.argv)).argv;
+
+const useWatchMode = argv.watch ?? false;
+
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 export default {
   preset: 'ts-jest/presets/default-esm',
@@ -34,6 +41,8 @@ export default {
     'express-handlebars': '<rootDir>/__mocks__/express-handlebars.js'
   },
   detectOpenHandles: true,
+  forceExit: !useWatchMode,
+  watchAll: useWatchMode,
 };
 
 export const setupFilesAfterEnv = ['<rootDir>/jest.setup.js'];
