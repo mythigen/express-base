@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @swagger
- * /v1/products:
+ * /:
  *   get:
  *     summary: Get all products
  *     tags: [Products]
@@ -19,13 +19,13 @@ const router = Router();
  *       200:
  *         description: List of products
  */
-router.get('/products', (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   res.send('Get all products');
 });
 
 /**
  * @swagger
- * /v1/products:
+ * /:
  *   post:
  *     summary: Create a product
  *     tags: [Products]
@@ -33,13 +33,13 @@ router.get('/products', (req: Request, res: Response) => {
  *       201:
  *         description: Created product
  */
-router.post('/products', (req: Request, res: Response) => {
+router.post('/', (req: Request, res: Response) => {
   res.send('Create a product');
 });
 
 /**
  * @swagger
- * /v1/products:
+ * /:
  *   patch:
  *     summary: Update a product
  *     tags: [Products]
@@ -47,7 +47,7 @@ router.post('/products', (req: Request, res: Response) => {
  *       202:
  *         description: Updated product
  */
-router.patch('/products', (req: Request, res: Response) => {
+router.patch('/', (req: Request, res: Response) => {
   res.status(202).send('Updated a product');
 });
 

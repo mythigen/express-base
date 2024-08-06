@@ -1,10 +1,10 @@
 import request from 'supertest';
-import app from '../server.ts'; // Adjust this path as necessary
+import app from '@/server.ts';
 
 describe('GET /v1/product', () => {
   it('should return all products', async () => {
     const response = await request(app)
-      .get('/v1/products')
+      .get('/v1/product')
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(200);
 
