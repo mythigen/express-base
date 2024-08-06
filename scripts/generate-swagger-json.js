@@ -1,9 +1,7 @@
-// scripts/generate-swagger-json.ts
 import swaggerJsdoc from 'swagger-jsdoc';
 import fs from 'fs';
 import path from 'path';
 
-// Swagger definition
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
@@ -19,16 +17,13 @@ const swaggerDefinition = {
   ],
 };
 
-// Options for the swagger docs
 const options = {
   swaggerDefinition,
   apis: ['./src/routes/*.ts', './src/server.ts'],
 };
 
-// Initialize swagger-jsdoc
 const swaggerSpec = swaggerJsdoc(options);
 
-// Save swagger.json to a file
 const saveSwaggerJson = () => {
   const swaggerJsonPath = path.resolve(__dirname, '../static/v1/swagger.json');
   fs.writeFileSync(swaggerJsonPath, JSON.stringify(swaggerSpec, null, 2), 'utf-8');

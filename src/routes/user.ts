@@ -11,7 +11,7 @@ const router = Router();
 
 /**
  * @swagger
- * /v1/users:
+ * /:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
@@ -19,13 +19,13 @@ const router = Router();
  *       200:
  *         description: List of users
  */
-router.get('/users', (req: Request, res: Response) => {
+router.get('/', (req: Request, res: Response) => {
   res.send('Get all users');
 });
 
 /**
  * @swagger
- * /v1/users:
+ * /:
  *   post:
  *     summary: Create a user
  *     tags: [Users]
@@ -33,13 +33,13 @@ router.get('/users', (req: Request, res: Response) => {
  *       201:
  *         description: Created user
  */
-router.post('/users', (req: Request, res: Response) => {
+router.post('/', (req: Request, res: Response) => {
   res.send('Create a user');
 });
 
 /**
  * @swagger
- * /v1/users:
+ * /:
  *   delete:
  *     summary: Delete a user
  *     tags: [Users]
@@ -47,7 +47,7 @@ router.post('/users', (req: Request, res: Response) => {
  *       202:
  *         description: Deleted user
  */
-router.delete('/users', (req: Request, res: Response) => {
+router.delete('/', (req: Request, res: Response) => {
   res.send('Delete a user');
 });
 

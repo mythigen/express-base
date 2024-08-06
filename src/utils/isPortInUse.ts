@@ -1,6 +1,5 @@
 import net from "net";
 
-// Function to check if a port is in use
 export function isPortInUse(port: number, host: string) {
     return new Promise((resolve, reject) => {
         const server = net.createServer();
