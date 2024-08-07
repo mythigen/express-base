@@ -48,13 +48,14 @@ routeFiles.forEach((file) => {
   const filePath = path.join(routesPath, file);
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   const firstLine = fileContent.split('\n')[0].trim();
+  const useBareRegex = /^['"]use-bare['"];?$/;
 
   const tempSpec: SwaggerSpec = swaggerJSDoc({
     ...options,
     apis: [filePath],
   }) as SwaggerSpec;
 
-  if (firstLine === '"use-bare"') {
+  if (useBareRegex.test(firstLine)) {
     const updatedPaths = updatePathsWithBasePath(tempSpec, '/v1');
     Object.assign(finalPaths, updatedPaths);
   } else {

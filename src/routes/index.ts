@@ -10,10 +10,11 @@ fs.readdirSync(routesPath).forEach((file) => {
     const filePath = path.join(routesPath, file);
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const firstLine = fileContent.split('\n')[0].trim();
+    const useBareRegex = /^['"]use-bare['"];?$/;
 
     const route = require(filePath).default;
 
-    if (firstLine === '"use-bare"') {
+    if (useBareRegex.test(firstLine)) {
       router.use('/', route);
     } else {
       const routeName = path.parse(file).name;
