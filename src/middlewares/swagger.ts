@@ -40,19 +40,28 @@ const updatePathsWithBasePath = (spec: SwaggerSpec, basePath: string): { [key: s
   return updatedPaths;
 };
 
-const routeFiles = fs.readdirSync(path.join(__dirname, '../routes'));
+const routesPath = path.join(__dirname, '../routes');
+const routeFiles = fs.readdirSync(routesPath);
 const finalPaths: { [key: string]: any } = {};
+
 routeFiles.forEach((file) => {
-  const basePath = `/v1/${path.basename(file, path.extname(file))}`;
-  const filePath = `${path.join(__dirname, '../routes')}/${file}`;
+  const filePath = path.join(routesPath, file);
+  const fileContent = fs.readFileSync(filePath, 'utf-8');
+  const firstLine = fileContent.split('\n')[0].trim();
+
   const tempSpec: SwaggerSpec = swaggerJSDoc({
     ...options,
     apis: [filePath],
   }) as SwaggerSpec;
 
-  const updatedPaths = updatePathsWithBasePath(tempSpec, basePath);
-
-  Object.assign(finalPaths, updatedPaths);
+  if (firstLine === '"use-bare"') {
+    const updatedPaths = updatePathsWithBasePath(tempSpec, '/v1');
+    Object.assign(finalPaths, updatedPaths);
+  } else {
+    const basePath = `/v1/${path.basename(file, path.extname(file))}`;
+    const updatedPaths = updatePathsWithBasePath(tempSpec, basePath);
+    Object.assign(finalPaths, updatedPaths);
+  }
 });
 
 swaggerSpec.paths = finalPaths;
