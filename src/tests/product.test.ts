@@ -1,10 +1,10 @@
 import request from 'supertest';
 import app from '@/server.ts';
 
-describe('GET /v1/product', () => {
+describe('GET /v1/', () => {
   it('should return all products', async () => {
     const response = await request(app)
-      .get('/v1/product')
+      .get('/v1/')
       .expect('Content-Type', 'text/html; charset=utf-8')
       .expect(200);
 
