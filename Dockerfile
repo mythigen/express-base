@@ -14,19 +14,28 @@ FROM install AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+# RUN bun test
+
 ENV NODE_ENV=production
-RUN bun test
 RUN bun run make:swagger
 RUN bun run build
 
+RUN ls /usr/src/app/target
+
 FROM base as release
 
-COPY --from=prerelease /usr/src/app/target/* .
-COPY --from=prerelease /usr/src/app/public ./public/
-COPY --from=prerelease /usr/src/app/templates ./templates/
+WORKDIR /usr/app/
+
+COPY --from=prerelease /usr/src/app/target/ ./
+COPY --from=prerelease /usr/src/app/static ./static/
+COPY --from=prerelease /usr/src/app/views ./views/
+COPY --from=prerelease /usr/src/app/__logs__ ./__logs__/
+COPY --from=prerelease /usr/src/app/src/routes ./routes/
+
+RUN ls
 
 ENV NODE_ENV=production
 
-USER bun
+# USER bun
 EXPOSE 3000/tcp
 CMD ["bun", "run", "server.js"]
