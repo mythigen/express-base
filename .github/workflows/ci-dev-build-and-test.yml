@@ -26,6 +26,7 @@ jobs:
           curl -fsSL https://bun.sh/install | bash
           echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
           echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
+          echo "Bun version: $(bun --version)"
         shell: bash
 
       - name: Load Bun into PATH
@@ -34,6 +35,8 @@ jobs:
 
       - name: Install Node.js dependencies
         run: |
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
           bun install
 
       - name: Run Tests
