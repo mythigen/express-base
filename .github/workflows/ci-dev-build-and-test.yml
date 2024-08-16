@@ -136,10 +136,10 @@ jobs:
           docker buildx inspect --bootstrap
           # Build and push Node.js app image
           docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ vars.ECR_BACKEND_IMAGE }}:latest --push .
-          # Build and push MongoDB image (optional if customized)
-          docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/mongo:latest --push ./mongo
-          # Build and push Redis image (optional if customized)
-          docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/redis:latest --push ./redis
+          # # Build and push MongoDB image (optional if customized)
+          # docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/mongo:latest --push ./mongo
+          # # Build and push Redis image (optional if customized)
+          # docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/redis:latest --push ./redis
 
       - name: Deploy to ECS
         uses: imehedi/actions-awscli-v2@latest
