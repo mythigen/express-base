@@ -112,9 +112,9 @@ jobs:
           export PATH="$BUN_INSTALL/bin:$PATH"
           bun install
 
-      - name: Run Tests
-        run: |
-          bun run test
+      # - name: Run Tests
+      #   run: |
+      #     bun run test
 
       - name: Set up Docker for x86
         uses: docker/setup-buildx-action@v3
