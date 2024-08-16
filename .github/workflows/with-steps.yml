@@ -1,0 +1,133 @@
+name: Build and Deploy Hola Vecina Backend to ECS
+
+on:
+  push:
+    branches:
+      - dev
+
+env:
+  ECR_BACKEND_IMAGE: ${{ vars.ECR_BACKEND_IMAGE }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+  ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
+  ECS_BACKEND_SERVICE: ${{ vars.ECS_BACKEND_SERVICE }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
+          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
+        shell: bash
+
+      - name: Load Bun into PATH
+        run: |
+          source $GITHUB_ENV
+
+      - name: Install Node.js dependencies
+        run: |
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          bun install
+
+      - name: Run Unit Tests
+        run: |
+          bun run test
+
+      - name: Send Slack Notification on Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Unit Tests Passed :white_check_mark:"}' ${{ env.SLACK_WEBHOOK_URL }}
+
+      - name: Send GitHub Email Notification on Failure
+        if: failure()
+        run: |
+          echo "Unit Tests failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Unit Tests Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+
+  build:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker for x86
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker buildx create --use
+          docker buildx inspect --bootstrap
+          docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ vars.ECR_BACKEND_IMAGE }}:latest .
+
+      - name: Send Slack Notification on Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Completed :white_check_mark:"}' ${{ env.SLACK_WEBHOOK_URL }}
+
+      - name: Send GitHub Email Notification on Failure
+        if: failure()
+        run: |
+          echo "Build failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Build Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+
+  package:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_DEFAULT_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com
+
+      - name: Push Docker image to ECR
+        run: |
+          docker buildx build --platform linux/amd64 -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_DEFAULT_REGION }}.amazonaws.com/${{ vars.ECR_BACKEND_IMAGE }}:latest --push .
+
+      - name: Send Slack Notification on Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Package Pushed to ECR :white_check_mark:"}' ${{ env.SLACK_WEBHOOK_URL }}
+
+      - name: Send GitHub Email Notification on Failure
+        if: failure()
+        run: |
+          echo "Package push to ECR failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Package Push Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: package
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Deploy to ECS
+        uses: imehedi/actions-awscli-v2@latest
+        with:
+          args: ecs update-service --cluster ${{ vars.ECS_CLUSTER }} --service ${{ vars.ECS_BACKEND_SERVICE }} --force-new-deployment
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: Send Slack Notification on Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment to ECS Completed :white_check_mark:"}' ${{ env.SLACK_WEBHOOK_URL }}
+
+      - name: Send GitHub Email Notification on Failure
+        if: failure()
+        run: |
+          echo "Deployment to ECS failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Deployment Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
