@@ -10,7 +10,7 @@ env:
   AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
   ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
   ECS_BACKEND_SERVICE: ${{ vars.ECS_BACKEND_SERVICE }}
-  SLACK_WEBHOOK_URL: ${{ vars.SLACK_WEBHOOK_URL }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   unit-tests:
@@ -34,7 +34,7 @@ jobs:
       - name: Send Slack Notification on Success
         if: success()
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Unit Tests Passed :white_check_mark:"}' ${{ vars.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Unit Tests Passed :white_check_mark:"}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
@@ -69,7 +69,7 @@ jobs:
       - name: Send Slack Notification on Success
         if: success()
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Completed :white_check_mark:"}' ${{ vars.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Build Completed :white_check_mark:"}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
@@ -100,7 +100,7 @@ jobs:
       - name: Send Slack Notification on Success
         if: success()
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Package Pushed to ECR :white_check_mark:"}' ${{ vars.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Package Pushed to ECR :white_check_mark:"}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
@@ -139,7 +139,7 @@ jobs:
       - name: Send Slack Notification on Success
         if: success()
         run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment to ECS Completed :white_check_mark:"}' ${{ vars.SLACK_WEBHOOK_URL }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment to ECS Completed :white_check_mark:"}' ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
