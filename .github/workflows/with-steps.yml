@@ -25,7 +25,8 @@ jobs:
           curl -fsSL https://bun.sh/install | bash
           echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
           echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
-        shell: bash
+          source $GITHUB_ENV
+          bun --version
 
       - name: Load Bun into PATH
         run: |
@@ -48,8 +49,15 @@ jobs:
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
-        run: |
-          echo "Unit Tests failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Unit Tests Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            github.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: "🚨 Unit Tests Failed! Please check the logs for more details. @${{ github.actor }}"
+            });
 
   build:
     runs-on: ubuntu-latest
@@ -75,8 +83,15 @@ jobs:
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
-        run: |
-          echo "Build failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Build Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            github.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: "🚨 Build Failed! Please check the logs for more details. @${{ github.actor }}"
+            });
 
   package:
     runs-on: ubuntu-latest
@@ -98,8 +113,15 @@ jobs:
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
-        run: |
-          echo "Package push to ECR failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Package Push Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            github.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: "🚨 Package Push Failed! Please check the logs for more details. @${{ github.actor }}"
+            });
 
   deploy:
     runs-on: ubuntu-latest
@@ -129,5 +151,13 @@ jobs:
 
       - name: Send GitHub Email Notification on Failure
         if: failure()
-        run: |
-          echo "Deployment to ECS failed during the CI/CD pipeline. Please check the logs for more details." | mail -s "Deployment Failed in GitHub Action" ${{ github.actor }}@users.noreply.github.com
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            github.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: "🚨 Deployment Failed! Please check the logs for more details. @${{ github.actor }}"
+            });
+

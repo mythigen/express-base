@@ -79,7 +79,7 @@ on:
     paths:
       - "**"
     branches:
-      - dev
+      - main
 
 env:
   ECR_BACKEND_IMAGE: ${{ vars.ECR_BACKEND_IMAGE }}
