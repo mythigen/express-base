@@ -43,7 +43,7 @@ jobs:
                   },
                   {
                     "title": "Timestamp",
-                    "value": "$TIMESTAMP",
+                    "value": $TIMESTAMP,
                     "short": true
                   }
                 ]
