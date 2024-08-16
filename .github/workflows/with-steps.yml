@@ -3,7 +3,7 @@ name: Build and Deploy Hola Vecina Backend to ECS
 on:
   push:
     branches:
-      - dev
+      - main
 
 env:
   ECR_BACKEND_IMAGE: ${{ vars.ECR_BACKEND_IMAGE }}
