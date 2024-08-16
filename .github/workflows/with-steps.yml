@@ -20,27 +20,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Bun
-        run: |
-          curl -fsSL https://bun.sh/install | bash
-          echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
-          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
-          source $GITHUB_ENV
-          bun --version
-
-      - name: Load Bun into PATH
-        run: |
-          source $GITHUB_ENV
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Specify your Node.js version here
 
       - name: Install Node.js dependencies
-        run: |
-          export BUN_INSTALL="$HOME/.bun"
-          export PATH="$BUN_INSTALL/bin:$PATH"
-          bun install
+        run: npm install
 
       - name: Run Unit Tests
-        run: |
-          bun run test
+        run: npm test
 
       - name: Send Slack Notification on Success
         if: success()
