@@ -19,7 +19,8 @@ jobs:
       - name: Notify Push
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
+          curl -X POST -H 'Content-type: application/json' --data "$(cat <<-EOF
+          {
             "text": "🔔 *New Push Detected*",
             "attachments": [
               {
@@ -48,8 +49,9 @@ jobs:
                 ]
               }
             ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
-
+          }
+          EOF
+          )" ${{ env.SLACK_WEBHOOK_URL }}
   unit-tests:
     runs-on: ubuntu-latest
     needs: push_notify
@@ -72,8 +74,9 @@ jobs:
         if: success()
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "🚀 *Unit Tests Passed*",
+          curl -X POST -H 'Content-type: application/json' --data "$(cat <<-EOF
+          {
+            "text": "🧪 *Tests Passed*",
             "attachments": [
               {
                 "color": "#36a64f",
@@ -101,7 +104,9 @@ jobs:
                 ]
               }
             ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+          }
+          EOF
+          )" ${{ env.SLACK_WEBHOOK_URL }}
 
   build-and-package:
     runs-on: ubuntu-latest
@@ -134,8 +139,9 @@ jobs:
         if: success()
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "✅ *Build Completed Successfully*",
+          curl -X POST -H 'Content-type: application/json' --data "$(cat <<-EOF
+          {
+            "text": "📦 *Build Completed Successfully*",
             "attachments": [
               {
                 "color": "#36a64f",
@@ -163,7 +169,9 @@ jobs:
                 ]
               }
             ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+          }
+          EOF
+          )" ${{ env.SLACK_WEBHOOK_URL }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -189,8 +197,9 @@ jobs:
         if: success()
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "🎉 *Deployment to ECS Completed Successfully*",
+          curl -X POST -H 'Content-type: application/json' --data "$(cat <<-EOF
+          {
+            "text": "🚀 *Deployment to ECS was Successful!*",
             "attachments": [
               {
                 "color": "#36a64f",
@@ -218,7 +227,9 @@ jobs:
                 ]
               }
             ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+          }
+          EOF
+          )" ${{ env.SLACK_WEBHOOK_URL }}
 
   failure_notify:
     runs-on: ubuntu-latest
@@ -228,8 +239,9 @@ jobs:
       - name: Send Slack Notification on Failure
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "🚨 *Workflow Failed*",
+          curl -X POST -H 'Content-type: application/json' --data "$(cat <<-EOF
+          {
+            "text": "🚨 *Failed to Complete*",
             "attachments": [
               {
                 "color": "#ff0000",
@@ -257,7 +269,9 @@ jobs:
                 ]
               }
             ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+          }
+          EOF
+          )" ${{ env.SLACK_WEBHOOK_URL }}
 
       - name: Send GitHub Email Notification on Failure
         uses: actions/github-script@v6
