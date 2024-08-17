@@ -3,7 +3,7 @@ name: Build and Deploy Hola Vecina Backend to ECS
 on:
   push:
     branches:
-      - nomain
+      - dev
 
 env:
   ECR_BACKEND_IMAGE: ${{ vars.ECR_BACKEND_IMAGE }}
@@ -15,7 +15,6 @@ env:
 jobs:
   push_notify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Notify Push
         run: |
@@ -54,7 +53,6 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     needs: push_notify
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -105,58 +103,9 @@ jobs:
             ]
           }' ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Send Slack Notification on Failure
-        if: failure()
-        run: |
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "🚨 *Unit Tests Failed*",
-            "attachments": [
-              {
-                "color": "#ff0000",
-                "fields": [
-                  {
-                    "title": "Repository",
-                    "value": "${{ github.repository }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Branch",
-                    "value": "${{ github.ref_name }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Actor",
-                    "value": "${{ github.actor }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Timestamp",
-                    "value": "$TIMESTAMP",
-                    "short": true
-                  }
-                ]
-              }
-            ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Send GitHub Email Notification on Failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { context, github } = require('@actions/github');
-            github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `🚨 **Unit Tests Failed!**\nPlease check the logs for more details. @${{ github.actor }}`
-            });
-
   build-and-package:
     runs-on: ubuntu-latest
     needs: unit-tests
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -216,58 +165,9 @@ jobs:
             ]
           }' ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: Send Slack Notification on Failure
-        if: failure()
-        run: |
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "🚨 *Build Failed*",
-            "attachments": [
-              {
-                "color": "#ff0000",
-                "fields": [
-                  {
-                    "title": "Repository",
-                    "value": "${{ github.repository }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Branch",
-                    "value": "${{ github.ref_name }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Actor",
-                    "value": "${{ github.actor }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Timestamp",
-                    "value": "$TIMESTAMP",
-                    "short": true
-                  }
-                ]
-              }
-            ]
-          }' ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Send GitHub Email Notification on Failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { context, github } = require('@actions/github');
-            github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `🚨 **Build Failed!**\nPlease check the logs for more details. @${{ github.actor }}`
-            });
-
   deploy:
     runs-on: ubuntu-latest
     needs: build-and-package
-
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -320,12 +220,16 @@ jobs:
             ]
           }' ${{ secrets.SLACK_WEBHOOK_URL }}
 
+  failure_notify:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, build-and-package, deploy]
+    if: failure()
+    steps:
       - name: Send Slack Notification on Failure
-        if: failure()
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "🚨 *Deployment Failed*",
+            "text": "🚨 *Workflow Failed*",
             "attachments": [
               {
                 "color": "#ff0000",
@@ -356,7 +260,6 @@ jobs:
           }' ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Send GitHub Email Notification on Failure
-        if: failure()
         uses: actions/github-script@v6
         with:
           script: |
@@ -365,6 +268,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `🚨 **Deployment Failed!**\nPlease check the logs for more details. @${{ github.actor }}`
+              body: `🚨 **Workflow Failed!**\nPlease check the logs for more details. @${{ github.actor }}`
             });
 
